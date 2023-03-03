@@ -19,6 +19,7 @@ const clientSchema = new mongoose.Schema({
     notes: {type: String, required: false},
     payments: {type: String, required: false},
     deleted: {type: Boolean, default: false},
+    user: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User'},
 }, {timestamps: true});
 
 
