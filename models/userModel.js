@@ -1,34 +1,74 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    // name, surname, email, phone, address, city, country, zip, password, photo, timeZone, hourlyRate, taxRate, companyName, companyLogo, companyAdress, companyCity, companyCountry, companyZip, companyPhone, companyEmail, companyWebsite, companyVat, companyLegalStatus, companyCurrency, companyLanguage
-    name: {type: String, required: true},
-    surname: {type: String, required: true},
-    email: {type: String, required: true},
-    password: {type: String, required: true},
-    phone: {type: String, required: true},
-    address: {type: String, required: false},
-    city: {type: String, required: false},
-    country: {type: String, required: false},
-    zip: {type: String, required: false},
-    photo: {type: String, required: false},
-    timeZone: {type: String, required: false},
-    hourlyRate: {type: String, required: false},
-    taxRate: {type: String, required: false},
-    companyName: {type: String, required: false},
-    companyLogo: {type: String, required: false},
-    companyAdress: {type: String, required: false},
-    companyCity: {type: String, required: false},
-    companyCountry: {type: String, required: false},
-    companyZip: {type: String, required: false},
-    companyPhone: {type: String, required: false},
-    companyEmail: {type: String, required: false},
-    companyWebsite: {type: String, required: false},
-    companyVat: {type: String, required: false},
-    companyLegalStatus: {type: String, required: false},
-    companyCurrency: {type: String, required: false},
-    companyLanguage: {type: String, required: false},
-    deleted: {type: Boolean, default: false},
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    clients: {
+        type: [Object],
+        required: false,
+    },
+    picturePath: {
+        type: String,
+        ref: 'Picture'
+    },
+    timeZone: {
+        type: String,
+        default: 'UTC'
+    },
+    hourlyRate: {
+        type: String,
+        required: false
+    },
+    taxRate: {
+        type: String,
+        required: false
+    },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
+    address: {
+        type: String,
+        default: ''
+    },
+    city: {
+        type: String,
+        default: ''
+    },
+    country: {
+        type: String,
+        default: ''
+    },
+    phone: {
+        type: String,
+        default: ''
+    },
+    tasks: {
+        type: [Object],
+        required: false
+    },
+    natures: {
+        type: String,
+        default: ''
+    },
+    folders: {
+        type: [Object],
+        required: false
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', userSchema);

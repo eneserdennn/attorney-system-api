@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Client = require('../models/clientModel');
+const User = require("../models/userModel");
 
 // @desc Get all clients
 // @route GET /api/clients
@@ -12,9 +13,8 @@ const getClients = asyncHandler(async (req, res) => {
 // @desc Get single client
 // @route GET /api/clients/:id
 // @access Private
-const getClient = asyncHandler( async (req, res) => {
+const getClient = asyncHandler(async (req, res) => {
     const client = await Client.findById(req.params.id);
-    // if Cast to ObjectId failed for value throw error
     if (!client) {
         res.status(404);
         throw new Error('Client not found');
@@ -26,25 +26,72 @@ const getClient = asyncHandler( async (req, res) => {
 // @desc Create client
 // @route POST /api/clients
 // @access Private
-const createClient = asyncHandler( async (req, res) => {
-    if (!req.body.name || !req.body.surname || !req.body.email || !req.body.phone || !req.body.address || !req.body.password) {
+const createClient = asyncHandler(async (req, res) => {
+    const {
+        name,
+        surname,
+        email,
+        password,
+        phone,
+        address,
+        city,
+        country,
+        currency,
+        hourlyRate,
+        vatRate,
+    } = req.body;
+
+    if (!name || !surname || !email || !password) {
         res.status(400);
         throw new Error('Please fill all required fields');
     }
 
-    const client = await Client.create(req.body);
-    res.status(200).json(client);
+    // Check if client already exists
+    const existingClient = await Client.findOne({ email });
 
+    if (existingClient) {
+        res.status(400);
+        throw new Error('Client already exists');
+    }
+
+
+
+    const user = await User.findById(req.user?.id);
+
+    if (!user) {
+        res.status(401);
+        throw new Error('User not authenticated');
+    }
+
+    const client = await Client.create({
+        userId: user._id,
+        name,
+        surname,
+        email,
+        password,
+        phone,
+        address,
+        city,
+        country,
+        currency,
+        hourlyRate,
+        vatRate,
+    });
+
+    // push client to user
+    user.clients.push(client._id);
+    await user.save();
+
+    res.status(200).json(client);
 });
+
 
 // @desc Update client
 // @route PUT /api/clients/:id
 // @access Private
-const updateClient = asyncHandler( async (req, res) => {
-    const client = await Client.findByIdAndUpdate(req.params.id , req.body, {
-        new: true,
-        runValidators: true
-    });
+const updateClient = asyncHandler(async (req, res) => {
+    const client = await Client.findById(req.params.id);
+
     if (client) {
         client.name = req.body.name || client.name;
         client.surname = req.body.surname || client.surname;
@@ -53,15 +100,10 @@ const updateClient = asyncHandler( async (req, res) => {
         client.address = req.body.address || client.address;
         client.city = req.body.city || client.city;
         client.country = req.body.country || client.country;
-        client.zip = req.body.zip || client.zip;
-        client.password = req.body.password || client.password;
-        client.photo = req.body.photo || client.photo;
-        client.relatedContact = req.body.relatedContact || client.relatedContact;
         client.hourlyRate = req.body.hourlyRate || client.hourlyRate;
         client.vatRate = req.body.vatRate || client.vatRate;
         client.currency = req.body.currency || client.currency;
-        client.notes = req.body.notes || client.notes;
-        client.payments = req.body.payments || client.payments;
+        client.photoPath = req.body.photoPath || client.photoPath;
         client.deleted = req.body.deleted || client.deleted;
 
         const updatedClient = await client.save();
@@ -76,7 +118,6 @@ const updateClient = asyncHandler( async (req, res) => {
 // @route DELETE /api/clients/:id
 // @access Private
 const deleteClient = asyncHandler(async (req, res) => {
-    // dont delete, just set deleted to true
     const client = await Client.findById(req.params.id);
     if (client) {
         client.deleted = true;
@@ -93,5 +134,5 @@ module.exports = {
     getClient,
     createClient,
     updateClient,
-    deleteClient
-}
+    deleteClient,
+};

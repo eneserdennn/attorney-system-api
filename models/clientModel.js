@@ -1,26 +1,83 @@
 const mongoose = require('mongoose');
 
 const clientSchema = new mongoose.Schema({
-    // name, surname, email, phone, address, city, country, zip, password, photo, relatedContact, hourlyRate, vatRate, currency, notes, payments, createdAt, updatedAt
-    name: {type: String, required: true},
-    surname: {type: String, required: true},
-    email: {type: String, required: true},
-    phone: {type: String, required: true},
-    address: {type: String, required: true},
-    city: {type: String, required: false},
-    country: {type: String, required: false},
-    zip: {type: String, required: false},
-    password: {type: String, required: true},
-    photo: {type: String, required: false},
-    relatedContact: {type: String, required: false},
-    hourlyRate: {type: String, required: false},
-    vatRate: {type: String, required: false},
-    currency: {type: String, required: false},
-    notes: {type: String, required: false},
-    payments: {type: String, required: false},
-    deleted: {type: Boolean, default: false},
-    user: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User'},
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    surname: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        default: ''
+    },
+    organization: {
+        type: String,
+        default: ''
+    },
+    quality: {
+        type: String,
+        default: ''
+    },
+    address: {
+        type: String,
+        default: ''
+    },
+    city: {
+        type: String,
+        default: ''
+    },
+    country: {
+        type: String,
+        default: ''
+    },
+    events: {
+        type: [Object]
+    },
+    currency: {
+        type: String,
+        default: ''
+    },
+    hourlyRate: {
+        type: String
+    },
+    vatRate: {
+        type: String
+    },
+    folders: {
+        type: [Object]
+    },
+    isOrganization: {
+        type: Boolean,
+        default: false
+    },
+    photoPath: {
+        type: String,
+        ref: 'Picture'
+    },
+    deleted: {
+        type: Boolean,
+        default: false
+    },
+    timeZone: {
+        type: String,
+        default: 'UTC'
+    }
 }, {timestamps: true});
-
 
 module.exports = mongoose.model('Client', clientSchema);
