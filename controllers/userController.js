@@ -108,21 +108,37 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route GET /api/users/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
-    const { _id, firstName, lastName, email, clients } = await User.findById(req.user.id);
+    const { _id, firstName, lastName, email, clients, tasks } = await User.findById(req.user.id);
 
     res.status(200).json({
         id: _id,
         firstName,
         lastName,
         email,
-        clients
+        clients,
+        tasks
     });
 });
+
+const getUserById = asyncHandler(async (req, res) => {
+    const { _id, firstName, lastName, email, clients, tasks } = await User.findById(req.user.id);
+
+    res.status(200).json({
+        id: _id,
+        firstName,
+        lastName,
+        email,
+        clients,
+        tasks
+    });
+});
+
 
 // Export methods
 module.exports = {
     registerUser,
     loginUser,
     getMe,
+    getUserById
 };
 
