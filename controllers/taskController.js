@@ -26,7 +26,7 @@ const getTaskForUser = asyncHandler(async (req, res) => {
 // @route POST /api/users/:userId/tasks
 // @access Private
 const createTaskForUser = asyncHandler(async (req, res) => {
-    const { taskName, startDate, associatedTo, taskType, priority, reminder, status, notes } = req.body;
+    const { taskName, startDate, endDate, associatedTo, taskType, priority, reminder, status, notes } = req.body;
 
     if (!taskName) {
         res.status(400);
@@ -44,6 +44,7 @@ const createTaskForUser = asyncHandler(async (req, res) => {
     const task = await Task.create({
         taskName,
         startDate,
+        endDate,
         associatedTo,
         taskType,
         priority,
