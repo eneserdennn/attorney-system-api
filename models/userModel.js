@@ -64,10 +64,6 @@ const userSchema = new mongoose.Schema({
     natures: {
         type: String,
         default: ''
-    },
-    folders: {
-        type: [Object],
-        required: false
     }
 }, {timestamps: true});
 

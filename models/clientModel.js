@@ -77,6 +77,10 @@ const clientSchema = new mongoose.Schema({
     timeZone: {
         type: String,
         default: 'UTC'
+    },
+    folders: {
+        type: [Object],
+        required: false
     }
 }, {timestamps: true});
 

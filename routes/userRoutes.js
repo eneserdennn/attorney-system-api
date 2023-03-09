@@ -1,5 +1,5 @@
 const express = require('express');
-const {registerUser, loginUser, getMe, getUserById} = require("../controllers/userController");
+const {registerUser, loginUser, getMe, getUserById, getAllUsers, updateUser} = require("../controllers/userController");
 const {getTasksForUser, createTaskForUser, getTaskForUser, deleteTaskForUser, updateTaskForUser} = require("../controllers/taskController");
 const router = express.Router();
 const {protect} = require("../middleware/authMiddleware");
@@ -13,6 +13,11 @@ router.post('/login', loginUser);
 router.get('/me', protect, getMe);
 // @desc: Get user by id
 router.get('/:userId', protect, getUserById);
+// @desc: Get all users
+router.get('/', protect, getAllUsers);
+// @desc: Update user profile
+router.put('/:userId', protect, updateUser);
+
 
 // @desc: Get tasks for a user
 router.get('/:userId/tasks', protect, getTasksForUser);

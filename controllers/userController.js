@@ -108,28 +108,64 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route GET /api/users/me
 // @access Private
 const getMe = asyncHandler(async (req, res) => {
-    const { _id, firstName, lastName, email, clients, tasks } = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id);
 
-    res.status(200).json({
-        id: _id,
-        firstName,
-        lastName,
-        email,
-        clients,
-        tasks
-    });
+    res.status(200).json(user);
 });
 
 const getUserById = asyncHandler(async (req, res) => {
-    const { _id, firstName, lastName, email, clients, tasks } = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id);
+
+    res.status(200).json(user);
+});
+
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({});
+    res.status(200).json(users);
+});
+
+// @desc: Update user profile
+// @route PUT /api/users/:id
+// @access Private
+const updateUser = asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, phone, address, city, country, picturePath, timeZone, hourlyRate, taxRate } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    // Update user properties
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+    user.address = address || user.address;
+    user.city = city || user.city;
+    user.country = country || user.country;
+    user.picturePath = picturePath || user.picturePath;
+    user.timeZone = timeZone || user.timeZone;
+    user.hourlyRate = hourlyRate || user.hourlyRate;
+    user.taxRate = taxRate || user.taxRate;
+
+    // Save updated user
+    const updatedUser = await user.save();
 
     res.status(200).json({
-        id: _id,
-        firstName,
-        lastName,
-        email,
-        clients,
-        tasks
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        address: updatedUser.address,
+        city: updatedUser.city,
+        country: updatedUser.country,
+        picturePath: updatedUser.picturePath,
+        timeZone: updatedUser.timeZone,
+        hourlyRate: updatedUser.hourlyRate,
+        taxRate: updatedUser.taxRate,
     });
 });
 
@@ -139,6 +175,8 @@ module.exports = {
     registerUser,
     loginUser,
     getMe,
-    getUserById
+    getUserById,
+    getAllUsers,
+    updateUser
 };
 
