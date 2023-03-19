@@ -10,13 +10,13 @@ router.post('/', registerUser);
 // @desc: Login a user
 router.post('/login', loginUser);
 // @desc: Get current logged in user
-router.get('/me', protect, getMe);
+router.get('/me', getMe);
 // @desc: Get user by id
-router.get('/:userId', protect, getUserById);
+router.get('/:userId', getUserById);
 // @desc: Get all users
-router.get('/', protect, getAllUsers);
+router.get('/', getAllUsers);
 // @desc: Update user profile
-router.put('/:userId', protect, updateUser);
+router.put('/:userId', updateUser);
 
 
 // @desc: Get tasks for a user

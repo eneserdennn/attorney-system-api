@@ -59,9 +59,6 @@ const clientSchema = new mongoose.Schema({
     vatRate: {
         type: String
     },
-    folders: {
-        type: [Object]
-    },
     isOrganization: {
         type: Boolean,
         default: false
