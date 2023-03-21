@@ -38,6 +38,21 @@ const addEventToClient = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc Get events for client
+// @route GET /api/clients/:clientId/events
+// @access Private
+const getEventsForClient = asyncHandler(async (req, res) => {
+    const client = await Client.findById(req.params.clientId);
+
+    if (client) {
+        res.status(200).json(client.events);
+    } else {
+        res.status(404);
+        throw new Error('Client not found');
+    }
+});
+
 module.exports = {
-    addEventToClient
+    addEventToClient,
+    getEventsForClient
 }

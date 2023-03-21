@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Client = require('../models/clientModel');
 const User = require("../models/userModel");
+const bcrypt = require('bcryptjs');
 
 // @desc Get all clients
 // @route GET /api/clients
@@ -63,12 +64,18 @@ const createClient = asyncHandler(async (req, res) => {
         throw new Error('User not authenticated');
     }
 
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new client
+
     const client = await Client.create({
         userId: user._id,
         name,
         surname,
         email,
-        password,
+        password: hashedPassword,
         phone,
         address,
         city,
