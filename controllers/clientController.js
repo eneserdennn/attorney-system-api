@@ -136,6 +136,12 @@ const deleteClient = asyncHandler(async (req, res) => {
     }
 });
 
+
+// @desc Get all events from all clients
+// @route GET /api/clients/events
+// @access Private
+
+
 module.exports = {
     getClients,
     getClient,
