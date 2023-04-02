@@ -18,13 +18,11 @@ const folderSchema = new mongoose.Schema({
         type: String
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: String,
         required: true
     },
     clientId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Client',
+        type: String,
         required: true
     },
     billingMethod: {

@@ -16,7 +16,8 @@ app.use(cors());
 
 app.use("/api/clients", require("./routes/clientRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
-// app.use('/api/send', require('./routes/mailRoutes'));
+app.use("/api/tasks", require("./routes/taskRoutes"));
+app.use("/api/events", require("./routes/eventRoutes"));
 
 app.use(errorHandler);
 

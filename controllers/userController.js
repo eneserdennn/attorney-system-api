@@ -114,7 +114,12 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const getUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.params.userId);
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
 
     res.status(200).json(user);
 });

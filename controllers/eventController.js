@@ -2,8 +2,8 @@ const asyncHandler = require('express-async-handler');
 const Client = require('../models/clientModel');
 
 const addEventToClient = asyncHandler(async (req, res) => {
-    const clientId = req.params.clientId;
-    const { name, startDate, endDate, place, description, calendar, associatedTo, id, title } = req.body;
+
+    const { name, startDate, endDate, place, description, calendar, associatedTo, id, title, clientId, userId } = req.body;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -12,31 +12,22 @@ const addEventToClient = asyncHandler(async (req, res) => {
     const startTimestamp = start.getTime();
     const endTimestamp = end.getTime();
 
-    const client = await Client.findById(clientId);
+    const event = {
+        name,
+        startDate: startTimestamp,
+        endDate: endTimestamp,
+        place,
+        description,
+        calendar,
+        associatedTo,
+        id,
+        title,
+        clientId,
+        userId
+    };
 
-    if (client) {
-        const event = {
-            clientId,
-            name,
-            startDate: startTimestamp,
-            endDate: endTimestamp,
-            place,
-            description,
-            calendar,
-            associatedTo,
-            id,
-            title
-        };
+    res.status(200).json(event);
 
-        client.events.push(event);
-
-        await client.save();
-
-        res.status(201).json(event);
-    } else {
-        res.status(404);
-        throw new Error('Client not found');
-    }
 });
 
 
