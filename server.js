@@ -18,6 +18,7 @@ app.use("/api/clients", require("./routes/clientRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/tasks", require("./routes/taskRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
+app.use("/api/folders", require("./routes/folderRoutes"));
 
 app.use(errorHandler);
 
