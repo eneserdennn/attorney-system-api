@@ -7,14 +7,18 @@ const {
   createFolder,
   getFoldersForUsers,
   getAllFolders,
-} = require("../controllers/nFolderController");
+  getFoldersByClientId,
+  addDocument,
+  removeDocument
+} = require("../controllers/folderController");
 
-router.route("/").get(getAllFolders);
-
-router
-  .route("/:id")
-  .post(protect, createFolder)
-  .delete(protect, deleteFolder)
-  .put(protect, updateFolderForUser);
+router.route("/").get(protect, getAllFolders);
+router.route("/:userId").get(protect, getFoldersForUsers);
+router.route("/client/:clientId").get(protect, getFoldersByClientId);
+router.route("/").post(protect, createFolder);
+router.route("/:id").put(protect, updateFolderForUser);
+router.route("/:id").delete(protect, deleteFolder);
+router.route("/:folderId/document").post(protect, addDocument);
+router.route("/:folderId/document/:fileName").delete(protect, removeDocument);
 
 module.exports = router;

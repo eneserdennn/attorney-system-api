@@ -1,143 +1,160 @@
-const asyncHandler = require("express-async-handler");
-const Client = require("../models/clientModel");
+const express = require("express");
+const Folder = require("../models/folderModel");
 const User = require("../models/userModel");
+const asyncHandler = require("express-async-handler");
+const router = express.Router();
 
-// @desc Add a new folder to a client
-// @route POST /api/clients/:clientId/folders
-// @access Private
-const addFolderToClient = asyncHandler(async (req, res) => {
+const getAllFolders = asyncHandler(async (req, res) => {
+  const folders = await Folder.find({});
+  res.status(200).json(folders);
+});
+
+const getFoldersForUsers = asyncHandler(async (req, res) => {
+  const folders = await Folder.find({ userId: req.params.userId }).populate(
+    "userId"
+  );
+  res.status(200).json(folders);
+});
+
+const getFoldersByClientId = asyncHandler(async (req, res) => {
+    const folders = await Folder.find({ clientId: req.params.clientId }).populate(
+        "clientId"
+    );
+    res.status(200).json(folders);
+});
+
+const createFolder = asyncHandler(async (req, res) => {
   const {
     folderName,
-    nature,
-    jurisdictions,
+    juridistrictions,
     currency,
     language,
+    clientId,
     billingMethod,
     applicableRate,
     budgetedAmount,
     fixedExpenses,
     documentsPath,
-    clientId,
-    userId,
+      userId
   } = req.body;
 
-  const user = await User.findById(userId);
-  const client = await Client.findById(clientId);
 
-  if (client) {
-    const folder = {
-      folderName,
-      nature,
-      jurisdictions,
-      currency,
-      language,
-      billingMethod,
-      applicableRate,
-      budgetedAmount,
-      fixedExpenses,
-      documentsPath,
-      clientId,
-    };
-
-    client.folders.push(folder);
-
-    await client.save();
-
-    res.status(201).json(folder);
-  } else {
-    res.status(404);
-    throw new Error("Client or User not found");
-  }
-});
-
-// @desc Get folders for a client
-// @route GET /api/clients/:clientId/folders
-// @access Private
-const getFoldersForClient = asyncHandler(async (req, res) => {
-  const client = await Client.findById(req.params.clientId);
-
-  if (client) {
-    res.status(200).json(client.folders);
-  } else {
-    res.status(404);
-    throw new Error("Client not found");
-  }
-});
-
-// @desc Get a single folder for a client
-// @route GET /api/clients/:clientId/folders/:folderId
-// @access Private
-const getFolderFromClient = asyncHandler(async (req, res) => {
-  const client = await Client.findById(req.params.clientId);
-
-  if (client) {
-    const folder = client.folders.find(
-      (folder) => folder._id.toString() === req.params.folderId
-    );
+const folder = await Folder.create({
+    folderName,
+    juridistrictions,
+    currency,
+    language,
+    clientId,
+    billingMethod,
+    applicableRate,
+    budgetedAmount,
+    fixedExpenses,
+    documentsPath,
+    userId
+    });
 
     if (folder) {
-      res.status(200).json(folder);
-    } else {
-      res.status(404);
-      throw new Error("Folder not found");
+        res.status(201).json({
+            _id: folder._id,
+            folderName: folder.folderName,
+            juridistrictions: folder.juridistrictions,
+            currency: folder.currency,
+            language: folder.language,
+            clientId: folder.clientId,
+            billingMethod: folder.billingMethod,
+            applicableRate: folder.applicableRate,
+            budgetedAmount: folder.budgetedAmount,
+            fixedExpenses: folder.fixedExpenses,
+            documentsPath: folder.documentsPath,
+            userId: folder.userId
+        });
     }
-  } else {
+
+    else {
+        res.status(400);
+        throw new Error("Invalid folder data");
+    }
+
+});
+
+const deleteFolder = asyncHandler(async (req, res) => {
+  const folder = await Folder.findOne({
+    userId: req.params.userId,
+    folderName: req.body.folderName,
+  });
+
+  if (!folder) {
     res.status(404);
-    throw new Error("Client not found");
+    throw new Error("Task not found");
   }
+
+  await folder.remove();
+  res.status(200).json({ message: "Task removed" });
 });
 
-// @desc Update a folder for a client
-// @route PUT /api/clients/:clientId/folders/:folderId
-// @access Private
-const updateFolderForClient = asyncHandler(async (req, res) => {
-  const {
-    folderName,
-    nature,
-    jurisdictions,
-    currency,
-    language,
-    billingMethod,
-    applicableRate,
-    budgetedAmount,
-    fixedExpenses,
-    documentsPath,
-  } = req.body;
+const updateFolderForUser = asyncHandler(async (req, res) => {
+  const folder = await Folder.findOne({
+    _id: req.params.id,
+    });
 
-  const client = await Client.findById(req.params.clientId);
+  if (!folder) {
+    res.status(404);
+    throw new Error("Folder not found");
+  }
 
-  if (client) {
-    const folderIndex = client.folders.findIndex((f) => f.id === folderId);
-    if (folderIndex !== -1) {
-      client.folders[folderIndex].folderName =
-        folderName || client.folders[folderIndex].folderName;
-      client.folders[folderIndex].nature =
-        nature || client.folders[folderIndex].nature;
-      client.folders[folderIndex].jurisdictions =
-        jurisdictions || client.folders[folderIndex].jurisdictions;
-      client.folders[folderIndex].currency =
-        currency || client.folders[folderIndex].currency;
-      client.folders[folderIndex].language =
-        language || client.folders[folderIndex].language;
-      client.folders[folderIndex].billing =
-        billing || client.folders[folderIndex].billing;
-      // burada folderın güncellendiği ve yeni halinin döndürüldüğüne dair bir bildirim veya loglama yapılabilir
-      return client.folders[folderIndex];
-    } else {
-      // eğer folderId'ye karşılık gelen bir folder yoksa hata döndürülebilir
-      throw new Error(
-        `Folder with id ${folderId} not found for client ${clientId}.`
-      );
+  folder.folderName = req.body.folderName || folder.folderName;
+  folder.currency = req.body.currency || folder.currency;
+  folder.language = req.body.language || folder.language;
+  folder.clientId = req.body.clientId || folder.clientId;
+  folder.billingMethod = req.body.billingMethod || folder.billingMethod;
+  folder.applicableRate = req.body.applicableRate || folder.applicableRate;
+  folder.budgetedAmount = req.body.budgetedAmount || folder.budgetedAmount;
+  folder.fixedExpenses = req.body.fixedExpenses || folder.fixedExpenses;
+  folder.documentsPath = req.body.documentsPath || folder.documentsPath;
+
+  const updatedFolder = await folder.save();
+  res.status(200).json(updatedFolder);
+});
+
+const addDocument = asyncHandler(async (req, res) => {
+    const { fileName, filePath } = req.body;
+    const { folderId } = req.params;
+    const folder = await Folder.findOne({ _id: folderId });
+
+    if (!folder) {
+        res.status(404);
+        throw new Error("Folder not found");
     }
-  } else {
-    // eğer clientId'ye karşılık gelen bir client yoksa hata döndürülebilir
-    throw new Error(`Client with id ${clientId} not found.`);
-  }
+
+    folder.documentsPath.push({ name: fileName, path: filePath });
+    await folder.save();
+    res.status(200).json(folder);
 });
+
+
+const removeDocument = asyncHandler(async (req, res) => {
+    const { folderId, fileName } = req.body;
+    const folder = await Folder.findOne({ _id: folderId });
+
+    if (!folder) {
+        res.status(404);
+        throw new Error("Folder not found");
+    }
+
+    const updatedPaths = folder.documentsPath.filter(file => file.name !== fileName);
+    folder.documentsPath = updatedPaths;
+    await folder.save();
+    res.status(200).json(folder);
+});
+
 
 module.exports = {
-  addFolderToClient,
-  getFoldersForClient,
-  getFolderFromClient,
-  updateFolderForClient,
+  updateFolderForUser,
+  deleteFolder,
+  createFolder,
+  getFoldersForUsers,
+  getAllFolders,
+    getFoldersByClientId,
+    addDocument,
+    removeDocument
 };

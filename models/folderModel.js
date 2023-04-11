@@ -37,9 +37,17 @@ const folderSchema = new mongoose.Schema({
     fixedExpenses: {
         type: String
     },
-    documentsPath: {
-        type: String
-    }
+    documentsPath: [{
+        _id: false,
+        name: {
+            type: String,
+            required: true
+        },
+        path: {
+            type: String,
+            required: true
+        }
+    }]
 }, {timestamps: true});
 
 module.exports = mongoose.model('Folder', folderSchema);
